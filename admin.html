@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Traffic Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <i class="fas fa-traffic-light"></i>
+                    <h1>Admin Panel - Traffic Management</h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="#" onclick="showPage('admin-dashboard')">Dashboard</a></li>
+                        <li><a href="#" onclick="showPage('manage-users')">Users</a></li>
+                        <li><a href="#" onclick="showPage('manage-traffic')">Traffic</a></li>
+                        <li><a href="#" onclick="showPage('manage-reports')">Reports</a></li>
+                        <li><a href="#" onclick="showPage('manage-violations')">Violations</a></li>
+                        <li><a href="#" onclick="showPage('notifications')">Notifications</a></li>
+                        <li><a href="#" onclick="logout()" class="btn btn-logout">Logout</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Admin Dashboard -->
+                <div id="admin-dashboard-page" class="page active">
+                    <div class="dashboard-header">
+                        <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" onclick="refreshDashboard()">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-users"></i>
+                            <h3>Total Users</h3>
+                            <p id="total-users">0</p>
+                            <small>Registered users</small>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Total Reports</h3>
+                            <p id="total-reports">0</p>
+                            <small>User complaints</small>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-file-invoice"></i>
+                            <h3>Total Violations</h3>
+                            <p id="total-violations">0</p>
+                            <small>Issued challans</small>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-traffic-light"></i>
+                            <h3>Active Locations</h3>
+                            <p id="active-locations">0</p>
+                            <small>Traffic points</small>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <div class="dashboard-section">
+                            <h3><i class="fas fa-chart-line"></i> Recent Reports</h3>
+                            <div id="recent-reports" class="reports-list">
+                                <!-- Recent reports will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-section">
+                            <h3><i class="fas fa-bell"></i> System Activity</h3>
+                            <div id="system-activity" class="activity-list">
+                                <!-- System activity will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manage Users -->
+                <div id="manage-users-page" class="page">
+                    <div class="page-header">
+                        <h2><i class="fas fa-users"></i> Manage Users</h2>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" onclick="showAddUserModal()">
+                                <i class="fas fa-plus"></i> Add User
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <input type="text" id="user-search" placeholder="Search users by name or email..." onkeyup="searchUsers()">
+                        <button class="btn btn-secondary" onclick="clearUserSearch()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                    
+                    <div id="users-table" class="data-table">
+                        <!-- Users table will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Manage Traffic -->
+                <div id="manage-traffic-page" class="page">
+                    <div class="page-header">
+                        <h2><i class="fas fa-traffic-light"></i> Manage Traffic Data</h2>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" onclick="showAddTrafficModal()">
+                                <i class="fas fa-plus"></i> Add Traffic Data
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="traffic-table" class="data-table">
+                        <!-- Traffic table will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Manage Reports -->
+                <div id="manage-reports-page" class="page">
+                    <div class="page-header">
+                        <h2><i class="fas fa-exclamation-triangle"></i> Manage User Reports</h2>
+                        <div class="header-actions">
+                            <select id="report-filter" onchange="filterReports()">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="reports-table" class="data-table">
+                        <!-- Reports table will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Manage Violations -->
+                <div id="manage-violations-page" class="page">
+                    <div class="page-header">
+                        <h2><i class="fas fa-file-invoice"></i> Manage Traffic Violations</h2>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" onclick="showAddViolationModal()">
+                                <i class="fas fa-plus"></i> Add Violation
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="violations-table" class="data-table">
+                        <!-- Violations table will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div id="notifications-page" class="page">
+                    <div class="page-header">
+                        <h2><i class="fas fa-bell"></i> Notification Management</h2>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" onclick="showAddNotificationModal()">
+                                <i class="fas fa-plus"></i> Send Notification
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="notifications-table" class="data-table">
+                        <!-- Notifications table will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="add-user-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('add-user-modal')">&times;</span>
+            <h3><i class="fas fa-user-plus"></i> Add New User</h3>
+            <form id="add-user-form">
+                <div class="form-group">
+                    <label for="new-user-name">Name</label>
+                    <input type="text" id="new-user-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-user-email">Email</label>
+                    <input type="email" id="new-user-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-user-password">Password</label>
+                    <input type="password" id="new-user-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-user-role">Role</label>
+                    <select id="new-user-role" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Add User
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="add-traffic-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('add-traffic-modal')">&times;</span>
+            <h3><i class="fas fa-traffic-light"></i> Add Traffic Data</h3>
+            <form id="add-traffic-form">
+                <div class="form-group">
+                    <label for="new-traffic-location">Location</label>
+                    <input type="text" id="new-traffic-location" placeholder="e.g., Main Street & 1st Avenue" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-traffic-level">Traffic Level</label>
+                    <select id="new-traffic-level" required>
+                        <option value="">Select Level</option>
+                        <option value="low">Low 🟢</option>
+                        <option value="medium">Medium 🟡</option>
+                        <option value="high">High 🔴</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-traffic-description">Description</label>
+                    <textarea id="new-traffic-description" rows="3" placeholder="Optional description..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Add Traffic Data
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="add-violation-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('add-violation-modal')">&times;</span>
+            <h3><i class="fas fa-file-invoice"></i> Add Traffic Violation</h3>
+            <form id="add-violation-form">
+                <div class="form-group">
+                    <label for="violation-user-select">User (Optional)</label>
+                    <select id="violation-user-select">
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-violation-vehicle">Vehicle Number</label>
+                    <input type="text" id="new-violation-vehicle" placeholder="e.g., MH-12-AB-1234" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-violation-type">Violation Type</label>
+                    <input type="text" id="new-violation-type" placeholder="e.g., Speeding, No Parking" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-violation-fine">Fine Amount (₹)</label>
+                    <input type="number" id="new-violation-fine" min="0" step="50" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-violation-location">Location</label>
+                    <input type="text" id="new-violation-location" placeholder="Where violation occurred">
+                </div>
+                <div class="form-group">
+                    <label for="new-violation-date">Violation Date</label>
+                    <input type="date" id="new-violation-date" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Add Violation
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="add-notification-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('add-notification-modal')">&times;</span>
+            <h3><i class="fas fa-bell"></i> Send Notification</h3>
+            <form id="add-notification-form">
+                <div class="form-group">
+                    <label for="notification-type">Type</label>
+                    <select id="notification-type" required>
+                        <option value="broadcast">Broadcast to All Users</option>
+                        <option value="user">Specific User</option>
+                    </select>
+                </div>
+                <div class="form-group" id="notification-user-group" style="display: none;">
+                    <label for="notification-user-select">Select User</label>
+                    <select id="notification-user-select">
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="notification-title">Title</label>
+                    <input type="text" id="notification-title" placeholder="Notification title" required>
+                </div>
+                <div class="form-group">
+                    <label for="notification-message">Message</label>
+                    <textarea id="notification-message" rows="4" placeholder="Notification message..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="notification-urgent">
+                        Mark as Urgent
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Notification
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
